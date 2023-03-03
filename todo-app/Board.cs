@@ -18,12 +18,86 @@ namespace ToDo
         // Lists the board
         public void list()
         {
-            Console.WriteLine("To Do\n--------------------------------------------");
+            Console.WriteLine("\tTo Do List\n--------------------------------------------");
             print(toDo);
-            Console.WriteLine("In Progress\n--------------------------------------------");
+            Console.WriteLine("\tIn Progress List\n--------------------------------------------");
             print(inProgress);
-            Console.WriteLine("Done\n--------------------------------------------");
+            Console.WriteLine("\tDone List\n--------------------------------------------");
             print(done);
+        }
+
+        public List<Card> selectList()
+        {
+            while (true)
+            {
+                Console.WriteLine(" -> Please select a list:\n\n\t1)To Do\n\t2)In Progress\n\t3)Done");
+                int choice = Int32.Parse(Card.takeInput("--------------------------------------------\n -> Selection"));
+                if (choice < 1 || choice > 3)
+                {
+                    Console.WriteLine("Make a valid choice!\n--------------------------------------------");
+                    continue;
+                }
+                if (choice == 1)
+                    return toDo;
+                if (choice == 2)
+                    return inProgress;
+                return done;
+            }
+        }
+
+        public Card searchListByTitle(string title, List<Card> list)
+        {
+            foreach (var card in list)
+                if (card.Title == title)
+                    return card;
+            return new Card();
+        }
+
+        public bool removeCard(string title)
+        {
+            Card temp = this.searchListByTitle(title, toDo);
+            if (temp.Title == "null")
+            {
+                temp = this.searchListByTitle(title, inProgress);
+                if (temp.Title == "null")
+                {
+                    temp = this.searchListByTitle(title, done);
+                    if (temp.Title == "null")
+                        return false;
+                    done.Remove(temp);
+                    return true;
+                }
+                inProgress.Remove(temp);
+                return true;
+            }
+            toDo.Remove(temp);
+            return true;
+        }
+
+        public bool updateCard(string title)
+        {
+            Console.WriteLine("Select where to move the cart:");
+            List<Card> _to = this.selectList();
+            Card temp = this.searchListByTitle(title, toDo);
+            if (temp.Title == "null")
+            {
+                temp = this.searchListByTitle(title, inProgress);
+                if (temp.Title == "null")
+                {
+                    temp = this.searchListByTitle(title, done);
+                    if (temp.Title == "null")
+                        return false;
+                    done.Remove(temp);
+                     _to.Add(temp);
+                    return true;
+                }
+                inProgress.Remove(temp);
+                _to.Add(temp);
+                return true;
+            }
+            toDo.Remove(temp);
+            _to.Add(temp);
+            return true;
         }
 
         // Prints a given list
@@ -31,18 +105,27 @@ namespace ToDo
         {
             if (tasks.Count == 0)
             {
-                Console.WriteLine("No task here!");
+                Console.WriteLine(
+                " # No task here!\n" +
+                "*********************************************");
                 return;
             }
             foreach (var task in tasks)
             {
-                Console.WriteLine("Title: {0}\n", task.Title);
-                Console.WriteLine("Content: {0}\n", task.Content);
-                Console.WriteLine("To: {0}\n", task.Id);
-                Console.WriteLine("Size: {0}\n", task.Size);
-                Console.WriteLine("***");
+                Console.WriteLine("\tTitle: {0}", task.Title);
+                Console.WriteLine("\tContent: {0}", task.Content);
+                Console.WriteLine("\tTo: {0}", getKeyByValue(task.Id));
+                Console.WriteLine("\tSize: {0}", task.Size);
+                Console.WriteLine("*********************************************");
             }
-            Console.WriteLine();
+        }
+
+        public string getKeyByValue(int id)
+        {
+            foreach (var member in SeedTeam.Team)
+                if (member.Value == id)
+                    return member.Key;
+            return "null";
         }
 
         public List<Card> ToDo

@@ -1,7 +1,5 @@
 namespace ToDo
 {
-    using System;
-
     public class Card
     {
         public enum Sizes {XS=1, S, M, L, XL, Null=-1};
@@ -18,6 +16,57 @@ namespace ToDo
             this.size = size;
         }
         public Card() {}
+
+        public static Card createCard()
+        {
+            string title = takeInput("Enter a title");
+            string content = takeInput("Enter some details");
+            int id = assignMember();
+            Sizes size = assignImportance();
+            return new Card(title, content, id, size);
+        }
+
+        public static int assignMember()
+        {
+            while (true)
+            {
+                int id = Int32.Parse(takeInput("Assign to"));
+                foreach (var member in SeedTeam.Team)
+                    if (id == member.Value)
+                        return id;
+                Console.WriteLine("No team member found! Try again.");
+            }
+        }
+
+        public static Sizes assignImportance()
+        {
+            while (true)
+            {
+                int size = Int32.Parse(takeInput("Importance (XS = 1, S = 2, M = 3, L = 4 XL = 5)"));
+                if (size < 1 || size > 5)
+                {
+                    Console.WriteLine("Enter a valid importance level!");
+                    continue;
+                }
+                return (Sizes)size;
+            }
+        }
+
+        public static string takeInput(string infoStr)
+        {
+            string? inp;
+            while (true)
+            {
+                Console.Write("{0}: ", infoStr);
+                inp = Console.ReadLine();
+                if (inp == null || inp == "")
+                {
+                    Console.WriteLine("Enter a valid input!");
+                    continue;
+                }
+                return inp;
+            }
+        }
 
         public string Title
         {
